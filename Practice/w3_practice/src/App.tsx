@@ -1,19 +1,28 @@
-import React, { ReactNode } from 'react';
-
-
+import { MAP_LIST, dataMapper } from "./dataMap";
 import './App.css';
 
-// type exploration
+////////------- type exploration  -------////////
 
-function addNames(): string[]{
+function addNames(): Array<{id:number;name:string;}>{
   
-  const names: string[] = ["jane","john","josh"];
+  // long gone are the days of declaring simple arrays
+  // wrong -> non unique key values
+  // const names: string[] = ["jane","john","josh"];
+
+  // create a basic array object filled with strings
+  const names: {id:number,name:string}[] = [{id:0,name:"jane"},{id:1,name:"john"},{id:2,name:"josh"}];
   return names;
+
 }
 
 function addNumbers(): number[]{
   
   const numbers: number[] = [3,6,9];
+
+  numbers.map((val:any): dataMapper =>({
+    number:val
+  }))
+
 
   numbers.push(4);
   let head: number = numbers[1];
@@ -50,7 +59,7 @@ function readOnly(): readonly string[]{
   return readOnlyNamed;
 }
 
-// Typed Objects ///
+////////------- Typed Objects  -------////////
 
 // creating an object and declaring  internal values type
 const tiktok: {user: string,followers:number,bio:string}={
@@ -61,7 +70,7 @@ const tiktok: {user: string,followers:number,bio:string}={
 //assigning a value after init
 tiktok.user = "furttech";
 
-//---- Option Typed Objects
+////////------- Option Typed Objects  -------////////
 
 // creating an object with optional type values
 const miner: {gold: number, silver?: number}={
@@ -72,14 +81,14 @@ miner.silver = 1000;
 // illegal assignment
 //miner.gold = "buffufalow";
 
-//---- Index Signatures
+////////-------  Index Signatures  -------////////
 
 const productQuantityMap: { [index: string]: number } = {}
 
 productQuantityMap.Waffles = 24;
 productQuantityMap.pancakes = 30;
 
-//-- ENUMS
+////////------- ENUMS
 
 enum ReturnCode {
    NOTFOUND = 404,
@@ -98,7 +107,7 @@ enum StringsofStrings {
 //-- output to console for some reason :P
 console.log(StringsofStrings.COW);
 
-/// --- Type Aliases And Interfaces
+////////------- Type Aliases And Interfaces  -------////////
 
 
 // declared some aliases
@@ -121,7 +130,7 @@ const deg: Degree ={
   classname: cname,
 }
 
-//--- interface
+////////------- interface  --------////////
 
 interface FarmAnimal {
   animalType: string, 
@@ -162,7 +171,7 @@ const nanermal: WetAnimal = {
 
 console.log(nanermal);
 
-// Union Parameter Type -> one | other
+////////------- Union Parameter Type -> one | other -------////////
 
 function printError( code: string | number ): string|number {
 
@@ -199,8 +208,7 @@ function divide({ dividend, divisor }: { dividend: number, divisor: number }) : 
 function sum(a: number, b: number, ...rest: number[]) {
   return a + b + rest.reduce((p, c) => p + c, 0);
 }
-
-/////--- Casting with AS -----////
+////////------- Casting with AS ----------////////
 
 let x: unknown = "waffle";
 console.log((x as string).length);
@@ -224,8 +232,7 @@ interface People{
 
 }
 
-
-/// inheritance with implements
+////////------- inheritance with implements -------////////
 
 class PurplePeople implements People {
 
@@ -241,7 +248,7 @@ class PurplePeople implements People {
 
 }
 
-/// inheritance with implements 
+////////------- inheritance with implements  -------////////
 class Person implements People {
   
   x:number = 3;
@@ -257,7 +264,7 @@ class Person implements People {
     
     //return `${this.age}${this.name}`;
     //return this.age?.toString().concat('',(this.name as string ));
-    return (this.age as string | number ).toString().concat('',(this.name as string));
+    return (this.age as string | number ).toString().concat((this.name as string));
     //return String(this.age)+String(this.name);
 
   }
@@ -280,7 +287,8 @@ class Person implements People {
 
 }
 
-/// Inheritance with Extends
+
+////////------- Inheritance with Extends -------////////
 
 class Aliens extends Person{
 
@@ -308,7 +316,7 @@ pers.getCombo();
 const p = new PurplePeople();
 console.log(p.i());
 
-// Abstract Classes
+////////------- Abstract Classes -------////////
 
 abstract class Polygon {
 
@@ -335,7 +343,110 @@ class Rectangle extends Polygon {
 const rec = new Rectangle(10,10);
 console.log(rec.toString());
 
-// helper functions ///
+
+////////------- TypeScript Generics -------////////
+
+function unitGeneric<S>(k1:S):[S]{
+  return [k1];
+}
+
+function pairGeneric<S,D>(k1:S,k2:D):[S,D]{
+  return [k1,k2];
+}
+
+function tripleGeneric<S,D,F>(k1:S,k2:D,k3:F):[S,D,F]{
+  return [k1,k2,k3];
+}
+
+const metal = unitGeneric<string|number>("gold");
+const metals = pairGeneric<string,number>("gold",100);
+const allMetals = tripleGeneric<string,number|string,number>("gold","oz",10);
+
+console.log(metal,metals,allMetals);
+
+abstract class Car<C>{
+
+  private _value: C | undefined;
+
+  public setInternalValue(val:C){
+    this._value=val;
+  }
+
+  public getInternalValue():C | undefined {
+    return this._value;
+  }
+
+  public toString(): string {
+    return `${this._value}`;
+  }
+
+}
+
+class RaceCar extends Car <string|number>{
+
+   public constructor(private n:string){
+     super();
+  }
+
+  public setCarNumber(v:number|string){
+    super.setInternalValue(v);
+  }
+
+  public getCarNumber(){
+    return super.getInternalValue;
+  }
+
+  public override toString(): string {
+    return `Type: ${this.n} , Number: ${super.getInternalValue()}`;
+  }
+}
+
+
+let car = new RaceCar("Race Car");
+car.setCarNumber("33");
+console.log(car.toString());
+
+// Typed Alias using Generics
+
+type Vehicle<T,V> = {k1:T,k2:V};
+
+const carTyped:Vehicle<string,number>= {k1:"honda",k2:1995};
+
+// Adding Default Values using Generic types and using extends
+
+class Simple<S extends number|string, R = string>{
+
+  private _value: S | undefined;
+  private _n: R | undefined;
+
+  public constructor(n:R){
+    this._n=n;
+  }
+
+  public setInternalValue(v:S){
+    this._value=v;
+  }
+
+  public getInternalValue(){
+    return this._value;
+  }
+
+  public toString():string{
+    return `N: ${this._n} => Value: ${this._value}`;
+  }
+
+}
+
+const simp = new Simple("kiss");
+simp.setInternalValue(44);
+const out = simp.toString();
+console.log(out);
+
+////////------- Utility Types  -------////////
+
+
+
+////////------- helper functions  -------////////
 
 function ListNameItem(props:any){
   return(
@@ -367,34 +478,46 @@ function ListTupleItem(props:any){
 function App() {
   return (
     <div className='container'>
+      <div className="subContainer">
+        <h3>Data Map:</h3>
+        <ul>
+          {MAP_LIST.map( ({id, name}: dataMapper) => {return <ListNameItem key={id} names={name}/>})}
+        </ul>
+      </div>
       <div className='subContainer'>
         <h3>Names:</h3> 
         <ul>
-          { addNames().map( (name:string)=> (<ListNameItem names={name}/>) )}
+          { 
+
+          addNames().map( ({id,name}: dataMapper)=> {return <ListNameItem key={id} names={name} /> } )
+
+          // addNames().map( (name:string) => { return <ListNameItem names={name} indexes/> } )
+          
+          }
         </ul>
       </div>  
       <div className='subContainer'>
         <h3>Numbers:</h3>
         <ul>
-          { addNumbers().map( (num:number) => (<ListNumItem numbs={num}/>) )}
+          { addNumbers().map( (num:number, id:number) => (<ListNumItem key={id} numbs={num}/>) )}
         </ul>
       </div>
       <div className='subContainer'>
         <h3>Typed Tuples:</h3>
         <ul>
-          { addTuples().map( (tuple:any)=>(<ListTupleItem tuples={tuple}/>) )}
+          { addTuples().map( (tuple:any,id:number)=>(<ListTupleItem key={id} tuples={tuple}/>) )}
         </ul>
       </div>
       <div className='subContainer'>
         <h3>Named Tuples:</h3>
         <ul>
-          { namedTuples().map( (tuple:any)=>(<ListTupleItem tuples={tuple}/>) )}
+          { namedTuples().map( (tuple:any,id:number)=>(<ListTupleItem key={id} tuples={tuple}/>) )}
         </ul>
       </div>
       <div className='subContainer'>
         <h3>Read Only:</h3>
         <ul>
-          { readOnly().map( (str:string) => (<ListNameItem names={str}/>) )}
+          { readOnly().map( (str:string,id:number) => (<ListNameItem key={id} names={str}/>) )}
         </ul>
       </div>
     </div>
