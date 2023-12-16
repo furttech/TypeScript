@@ -346,6 +346,11 @@ console.log(rec.toString());
 
 ////////------- TypeScript Generics -------////////
 
+/**
+ * 
+ * @param k1 Generic Type Parameter
+ * @returns object array[] of type <S>
+ */
 function unitGeneric<S>(k1:S):[S]{
   return [k1];
 }
@@ -413,7 +418,6 @@ type Vehicle<T,V> = {k1:T,k2:V};
 const carTyped:Vehicle<string,number>= {k1:"honda",k2:1995};
 
 // Adding Default Values using Generic types and using extends
-
 class Simple<S extends number|string, R = string>{
 
   private _value: S | undefined;
@@ -447,7 +451,11 @@ console.log(out);
 
 
 ////////------- helper functions  -------////////
-
+/**
+ * 
+ * @param props any type prop ["name"]
+ * @returns list item html code with props value
+ */
 function ListNameItem(props:any){
   return(
     <li> Name: [ {props.names} ]</li>
