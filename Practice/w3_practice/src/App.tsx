@@ -417,6 +417,8 @@ type Vehicle<T,V> = {k1:T,k2:V};
 
 const carTyped:Vehicle<string,number>= {k1:"honda",k2:1995};
 
+console.log(carTyped);
+
 // Adding Default Values using Generic types and using extends
 class Simple<S extends number|string, R = string>{
 
@@ -447,7 +449,236 @@ const out = simp.toString();
 console.log(out);
 
 ////////------- Utility Types  -------////////
+/*
+*  TypeScript comes with a large number of types that can 
+*  help with some common type manipulation, 
+*  usually referred to as utility types. (w3schools.com)
+*/
 
+/*
+*   Utilizing Partial Keyword allows for
+*   all attributes to be marked as optional.
+*/
+interface PartialUtility {
+  x:number;
+  y:number;
+};
+
+// Create an object with Partial Utility type
+let a: Partial<PartialUtility> = {};
+a.x = 445;
+a.y = 335;
+
+/*
+*  A Required keyword forces all attributes
+*  as required within the interface
+*/
+interface RequiredUtility {
+  a:number;
+  b:string;
+  c?:string;
+};
+
+// Create an object with Required Utility Types
+// Note the params must be defined as declaration
+let req: Required<RequiredUtility> = {
+  a:66,
+  b:"mooCow",
+  c:"waffles"
+};
+
+/*
+*   Record is a shortcut to defining an object
+*   type with a specific key type and value type.
+*
+*   Note:
+*   Record<string, number> is equivalent to { [key: string]: number }
+*/
+const vehicleIDController: Record<string,number> = {
+  "VW Bug":1990,
+  "Honda Civic":2005,
+}
+
+/*
+*   The "Omit" keyword allows a parameter to be excluded as needed
+*
+*/
+interface P {
+  name:string;
+  age: number;
+  location?:string;
+}
+
+const bill: Omit<P, 'age'|'location'> = {
+  name:'furttech'
+}
+console.log(bill.name);
+
+/*
+*   The "Pick" keyword removes all required params
+*   except for the specified values
+*/
+interface G {
+  buff:string;
+  goal:number;
+  banjo?:string;
+}
+
+let ff: Pick<G,'banjo'> ={
+  banjo:"gogo",
+}
+console.log(ff.banjo);
+
+/*
+*   The 'Exclude' keyword removes a type for a union (x|y)
+*/
+type Primitive = number | string | boolean;
+const value: Exclude<Primitive, boolean> = "waffles";
+console.log(value);
+
+/*
+*   The "ReturnType" extracts a Type value from the 
+*   associated functions 
+*/
+type CordinateGen = () => { x:number; y:number;};
+const co: ReturnType<CordinateGen> = {
+  x:120,
+  y:130,
+};
+
+/*
+*   The "Parameters" keyword extracts the param types
+*   from the function as an array :O :/
+*/
+type PointPrinter = (x: { x: number; y:number; }) => void;
+const point: Parameters<PointPrinter>[0] = {
+  x:44,
+  y:45,
+};
+
+/*
+*   Finally the "ReadOnly" forces all the params to
+*   a read only during the creation of a new object
+*/
+interface Reader {
+  book:string;
+  pages:number;
+}
+
+const book: Readonly<Reader> = {
+  book:"The Art of TypeScript",
+  pages:440
+}
+
+console.log(book.book);
+
+////////-- Keyof (Explicit Keys and Index Signatures) --///////
+
+
+/*
+*   The "keyOf" keyword used with Explicit keys 
+*   creates a union type with the keys
+*/
+
+// create the interface for type declaration
+interface keyOfExample {
+  k:string;
+  l:number;
+}
+
+// create a function to accept an interface and parameter
+function printKeyOfProperties(aKey: keyOfExample, property: keyof keyOfExample){
+  console.log( `Key Value: ${aKey} :: Property Value: ${property} `);
+}
+
+// instantiate an object with parameters
+let KeyExm = {
+  k:"This is A Key",
+  l:300,
+}
+
+// use keyof to print the value of a given key from union object
+printKeyOfProperties(KeyExm,"l");
+
+/*
+*   The "keyOf" keyword is also able to extract index types
+*/
+type StringMapper = { [key:string]: unknown};
+
+// function returns object containing type of declared property
+function outputMapper(property: keyof StringMapper, value:string ): StringMapper {
+  return { [property]: value};
+}
+
+////////----- NULL and UNDEFINED -----////////
+/*
+*   null and undefined types are functionally identical to other types
+*/
+
+// create a value with null type
+let aValue: string | undefined | null = null;
+// assign a value
+aValue = "waffles";
+// assign to undefined
+aValue = undefined;
+
+/*
+*   Javascript allows for chaining in typescript
+*/
+interface Animal {
+  breed:string;
+  skinType?: {
+    surface: string;
+  };
+}
+
+function printSkinType(a: Animal){
+  const whatSkin = a.skinType?.surface;
+  if(whatSkin === undefined){
+    console.log("no skin");
+  } else {
+    console.log(`The animal has ${whatSkin}`);
+  }
+}
+
+// create an animal object without adding skin type
+let n:Animal ={
+  breed:"snake" 
+};
+
+// This will print no skin due to lack of param in declaration
+console.log("Skin Type: "+ printSkinType(n));
+
+/*
+*   Nullish Coalescence is a fancy way of saying
+*   javascript allows typescript to handle "null" and 
+*   "undefined" types cleanly.
+*/
+
+function printHours( runTime:number | null | undefined ){
+  console.log(`UpTime: ${runTime ?? "Not Available"}`);
+}
+
+printHours(null); // prints 'null'
+printHours(100);    // print 'UpTime: 0'
+
+/*
+*   Null Assertion is considered unsafe in some situations
+*   and must be used with caution to ensure type safety.
+*   This allows a "null" or "undefined" value to be ignored
+*   in case it was not instantiated properly.
+*/
+
+// define a function 
+function getVal():string|undefined{
+  return "hello";
+}
+
+// set a value 
+let aVal = getVal();
+
+// Outputs a value length ignoring any undefined type errors 
+console.log('Value Length: ' + aVal!.length);
 
 
 ////////------- helper functions  -------////////
